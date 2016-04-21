@@ -1,0 +1,69 @@
+apply plugin: 'com.android.application'
+apply plugin: 'com.neenbedankt.android-apt'
+
+android {
+
+    def globalConfiguration = rootProject.extensions.getByName("ext")
+
+
+    compileSdkVersion globalConfiguration.getAt("androidCompileSdkVersion")
+    buildToolsVersion globalConfiguration.getAt("androidBuildToolsVersion")
+
+    defaultConfig {
+
+        minSdkVersion globalConfiguration.getAt("androidMinSdkVersion")
+        targetSdkVersion globalConfiguration.getAt("androidTargetSdkVersion")
+
+        applicationId globalConfiguration.getAt("androidApplicationId")
+        versionCode globalConfiguration.getAt("androidVersionCode")
+        versionName globalConfiguration.getAt("androidVersionName")
+        testInstrumentationRunner globalConfiguration.getAt("testInstrumentationRunner")
+        testApplicationId globalConfiguration.getAt("testApplicationId")
+
+        multiDexEnabled true
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
+    }
+
+}
+
+
+dependencies {
+    def presentationDependencies = rootProject.ext.presentationDependencies
+    def presentationTestDependencies = rootProject.ext.presentationTestDependencies
+    compile project(':domain')
+    compile project(':data')
+
+    compile presentationDependencies.supportLibrary
+    compile presentationDependencies.designLibrary
+    compile presentationDependencies.rangeSeekbar
+    compile 'com.squareup.picasso:picasso:2.5.2'
+
+    apt presentationDependencies.daggerCompiler
+    provided domainDependencies.javaxAnnotation
+    compile presentationDependencies.dagger
+    compile presentationDependencies.butterKnife
+    compile presentationDependencies.recyclerView
+    compile presentationDependencies.rxJava
+    compile presentationDependencies.rxAndroid
+    compile presentationDependencies.paperDb
+
+    androidTestCompile presentationTestDependencies.mockito
+    androidTestCompile presentationTestDependencies.dexmaker
+    androidTestCompile presentationTestDependencies.dexmakerMockito
+    androidTestCompile(presentationTestDependencies.espresso) {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    }
+    androidTestCompile presentationTestDependencies.testingSupportLib
+    testCompile presentationTestDependencies.junit
+    testCompile presentationTestDependencies.assertj
+    testCompile presentationTestDependencies.mockito
+}
